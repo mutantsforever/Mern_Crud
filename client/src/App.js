@@ -19,17 +19,27 @@ const TodosQuery = gql`
     complete
   }
 }
-`
+`;
 const UpdateMutation = gql`
   mutation ($id: ID! , $complete: Boolean!){
     updateTodo( $id , $complete)
 }
-`
+`;
 const RemoveMutation = gql`
   mutation ($id: ID!){
     updateTodo( $id , $complete)
 }
-`
+`;
+
+const CreateTodoMutation = gql`
+mutation($text: String!) {
+  createTodo(text: $text) {
+    id
+    text
+    complete
+  }
+}
+`;
 
 class App extends Component {
 
@@ -55,9 +65,9 @@ class App extends Component {
         );
         // Write our data back to the cache.
         store.writeQuery({ query: TodosQuery, data });
-      },
-    })
-  }
+      }
+    });
+  
 };
 
 removeTodo = async todo => {
@@ -70,12 +80,28 @@ removeTodo = async todo => {
       // Read the data from our cache for this query.
       const data = store.readQuery({ query: TodosQuery });
       // Add our comment from the mutation to the end.
-      data.todos = data.todos.filter(x => x.id !== todo.id)
+      data.todos = data.todos.filter(x => x.id !== todo.id);
       // Write our data back to the cache.
       store.writeQuery({ query: TodosQuery, data });
-    },
-  })
+    }
+  });
 };
+
+createTodo = async text => {
+  await this.props.createTodo({
+    variables: {
+      text,
+    },
+    update: (store, {data: {createTodo}}) => {
+      // Read the data from our cache for this query.
+      const data = store.readQuery({ query: TodosQuery });
+      // Add our comment from the mutation to the end.
+      data.todos.unshift(createTodo);
+      // Write our data back to the cache.
+      store.writeQuery({ query: TodosQuery, data });
+    }
+  });
+} 
 
 render() {
 
@@ -91,7 +117,7 @@ render() {
           {/* {todos.map(todo => 
               (<div key={`${todo.id}-todo-item`}>{todo.text}</div>)
             )} */}
-          <Form />
+          <Form  />
           <List>
             {todos.map(todo => (
               <ListItem
@@ -99,7 +125,7 @@ render() {
                 role={undefined}
                 dense
                 button
-                onClick={this.updateTodo(todo)}
+                onClick={() => this.updateTodo(todo)}
               >
                 <Checkbox
                   checked={todo.complete}
@@ -120,8 +146,10 @@ render() {
     </div>
   );
 }
+}
 
 export default compose(
+  graphql(CreateTodoMutation, { name: "createTodo" }),
   graphql(RemoveMutation, { name: "removeTodo" }),
   graphql(UpdateMutation, { name: "updateTodo" }),
   graphql(TodosQuery))(App);
