@@ -1,0 +1,7 @@
+https://github.com/prismagraphql/graphql-yoga
+
+https://mongoosejs.com/docs/index.html
+
+https://www.apollographql.com/docs/react/essentials/get-started.html
+
+https://material-ui.com/getting-started/installation/
