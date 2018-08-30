@@ -1,21 +1,20 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
-
 export default class Form extends React.Component {
 
     state = {
         text: '',  
     }
 
-    handleChange = (e) => {
+    handleChange = e => {
         const newText = e.target.value;
         // console.log(newText);
-        this.state.text({
+        this.setState({
             text: newText
         });
     };
 
-    handleKeyDown = (e) => {
+    handleKeyDown = e => {
         if(e.key === "Enter") {
             this.props.submit(this.state.text);
             this.setState({text: ""});
@@ -31,7 +30,7 @@ export default class Form extends React.Component {
           label="todo..."
           margin="normal"
           value={text}
-          fullwidth
+          fullWidth
         />
 
         );

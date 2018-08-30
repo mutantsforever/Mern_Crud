@@ -22,17 +22,17 @@ const TodosQuery = gql`
 `;
 const UpdateMutation = gql`
   mutation ($id: ID! , $complete: Boolean!){
-    updateTodo( $id , $complete)
-}
+    updateTodo( id: $id , complete: $complete)
+  }
 `;
 const RemoveMutation = gql`
-  mutation ($id: ID!){
-    updateTodo( $id , $complete)
-}
+  mutation ($id: ID!) {
+    removeTodo( id: $id )
+  }
 `;
 
 const CreateTodoMutation = gql`
-mutation($text: String!) {
+mutation ($text: String!) {
   createTodo(text: $text) {
     id
     text
@@ -67,85 +67,85 @@ class App extends Component {
         store.writeQuery({ query: TodosQuery, data });
       }
     });
-  
-};
 
-removeTodo = async todo => {
-  //remove todo
-  await this.props.removeTodo({
-    variables: {
-      id: todo.id,
-    },
-    update: store => {
-      // Read the data from our cache for this query.
-      const data = store.readQuery({ query: TodosQuery });
-      // Add our comment from the mutation to the end.
-      data.todos = data.todos.filter(x => x.id !== todo.id);
-      // Write our data back to the cache.
-      store.writeQuery({ query: TodosQuery, data });
-    }
-  });
-};
+  };
 
-createTodo = async text => {
-  await this.props.createTodo({
-    variables: {
-      text,
-    },
-    update: (store, {data: {createTodo}}) => {
-      // Read the data from our cache for this query.
-      const data = store.readQuery({ query: TodosQuery });
-      // Add our comment from the mutation to the end.
-      data.todos.unshift(createTodo);
-      // Write our data back to the cache.
-      store.writeQuery({ query: TodosQuery, data });
-    }
-  });
-} 
+  removeTodo = async todo => {
+    //remove todo
+    await this.props.removeTodo({
+      variables: {
+        id: todo.id,
+      },
+      update: store => {
+        // Read the data from our cache for this query.
+        const data = store.readQuery({ query: TodosQuery });
+        // Add our comment from the mutation to the end.
+        data.todos = data.todos.filter(x => x.id !== todo.id);
+        // Write our data back to the cache.
+        store.writeQuery({ query: TodosQuery, data });
+      }
+    });
+  };
 
-render() {
-
-  const { data: { loading, todos } } = this.props;
-  if (loading) {
-    return null;
+  createTodo = async text => {
+    await this.props.createTodo({
+      variables: {
+        text,
+      },
+      update: (store, { data: { createTodo } }) => {
+        // Read the data from our cache for this query.
+        const data = store.readQuery({ query: TodosQuery });
+        // Add our comment from the mutation to the end.
+        data.todos.unshift(createTodo);
+        // Write our data back to the cache.
+        store.writeQuery({ query: TodosQuery, data });
+      }
+    });
   }
 
-  return (
-    <div style={{ display: "flex" }}>
-      <div style={{ margin: "auto", width: 400 }}>
-        <Paper>
-          {/* {todos.map(todo => 
+  render() {
+
+    const { data: { loading, todos } } = this.props;
+    if (loading) {
+      return null;
+    }
+
+    return (
+      <div style={{ display: "flex" }}>
+        <div style={{ margin: "auto", width: 400 }}>
+          <Paper>
+            {/* {todos.map(todo => 
               (<div key={`${todo.id}-todo-item`}>{todo.text}</div>)
             )} */}
-          <Form  />
-          <List>
-            {todos.map(todo => (
-              <ListItem
-                key={todo.id}
-                role={undefined}
-                dense
-                button
-                onClick={() => this.updateTodo(todo)}
-              >
-                <Checkbox
-                  checked={todo.complete}
-                  tabIndex={-1}
-                  disableRipple
-                />
-                <ListItemText primary={todo.text} />
-                <ListItemSecondaryAction>
-                  <IconButton onClick={() => this.removeTodo(todo)}>
-                    <CloseIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
-      </div>;
+            <Form submit={this.createTodo} />
+            <List>
+              {todos.map(todo => (
+                <ListItem
+                  key={todo.id}
+                  role={undefined}
+                  dense
+                  button
+                  onClick={() => this.updateTodo(todo)}
+                >
+                  <Checkbox
+                    checked={todo.complete}
+                    tabIndex={-1}
+                    disableRipple
+                  />
+                  <ListItemText primary={todo.text} />
+                  <ListItemSecondaryAction>
+                    <IconButton onClick={() => this.removeTodo(todo)}>
+                      <CloseIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          </Paper>
+        </div>;
     </div>
-  );
-}
+    );
+  }
 }
 
 export default compose(
