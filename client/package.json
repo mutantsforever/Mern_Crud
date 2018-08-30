@@ -1,4 +1,5 @@
 {
+  "homepage": "http://mutantsforever.github.io/Mern_Crud",
   "name": "client",
   "version": "0.1.0",
   "private": true,
@@ -6,6 +7,7 @@
     "@material-ui/core": "^1.5.1",
     "@material-ui/icons": "^2.0.3",
     "apollo-boost": "^0.1.13",
+    "gh-pages": "^1.2.0",
     "graphql": "^0.13.2",
     "react": "^16.4.2",
     "react-apollo": "^2.1.11",
@@ -13,6 +15,8 @@
     "react-scripts": "1.1.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
